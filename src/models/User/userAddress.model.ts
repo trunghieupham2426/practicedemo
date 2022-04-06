@@ -16,7 +16,7 @@ class UserAddress extends Model {
   @Column
   userId: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   user: User;
 
   @Column

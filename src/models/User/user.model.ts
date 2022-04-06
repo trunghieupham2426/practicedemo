@@ -9,6 +9,7 @@ import {
 import bcrypt from 'bcryptjs';
 
 import UserInfo from './userInfo.model';
+import UserAddress from './userAddress.model';
 
 @Table({
   tableName: 'User',
@@ -23,6 +24,7 @@ class User extends Model {
 
   @Column
   password: string;
+
   @BeforeCreate
   static async hashPassword(user: User) {
     user.password =
@@ -52,5 +54,8 @@ class User extends Model {
   //relation
   @HasOne(() => UserInfo)
   userInfo: UserInfo;
+
+  @HasOne(() => UserAddress)
+  userAddress: UserAddress;
 }
 export default User;
