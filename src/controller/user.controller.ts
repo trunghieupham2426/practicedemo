@@ -44,6 +44,14 @@ export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
     const user = (await userService.loginUser(email, password)) as User;
+    //clear the session
+    //@ts-ignore
+    req.session.userId = null;
+    //check user is Admin , then set the session
+    if (user.isAdmin) {
+      //@ts-ignore
+      req.session.userId = user.id;
+    }
     //generate token
     const token = generateToken({ id: user.id }, process.env.JWT_EXPIRYTIME);
     res.status(200).json({
@@ -81,7 +89,7 @@ export const resetPassword = catchAsync(
   }
 );
 
-export const viewUserProfile = catchAsync(
+export const viewMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id;
     //get user profile

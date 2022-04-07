@@ -20,6 +20,7 @@ export class UserService extends AuthService {
         if (user) {
           const err = new createError.BadRequest('Email already in use');
           reject(err);
+          return;
         }
         //create new user
         const newUser = await User.create(data);
@@ -28,29 +29,6 @@ export class UserService extends AuthService {
         //add userAddress
         await UserAddress.create({ userId: newUser.id });
         result(newUser);
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
-  async viewUserProfile(userId: string) {
-    return new Promise(async (result, reject) => {
-      try {
-        const user = await User.findOne({
-          where: { id: userId },
-          include: [UserInfo, UserAddress],
-          attributes: {
-            exclude: [
-              'password',
-              'isAdmin',
-              'passwordResetToken',
-              'isActive',
-              'passwordResetExpires',
-            ],
-          },
-        });
-        result(user);
       } catch (err) {
         reject(err);
       }
@@ -112,6 +90,7 @@ export class UserService extends AuthService {
             `User not found , can't update address `
           );
           reject(err);
+          return;
         }
 
         //update address
@@ -135,6 +114,7 @@ export class UserService extends AuthService {
         if (!userInfo) {
           const err = new createError.NotFound('User not found');
           reject(err);
+          return;
         }
 
         result(userInfo);

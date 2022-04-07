@@ -27,7 +27,24 @@ export const protectingRoutes = async (
     //@ts-ignore
     return next(new createError(401, 'this user does not exist'));
   }
-  //@ts-ignore
+
   req.user = user;
+  next();
+};
+
+export const adminProtectingRoute = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  //@ts-ignore
+  const adminId = req.session?.userId;
+
+  if (!adminId) {
+    const err = new createError.Forbidden(
+      'you are not allow access this route'
+    );
+    return next(err);
+  }
   next();
 };

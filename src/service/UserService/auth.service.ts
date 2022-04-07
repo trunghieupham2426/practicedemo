@@ -1,4 +1,6 @@
 import User from '../../models/User/user.model';
+import UserInfo from '../../models/User/userInfo.model';
+import UserAddress from '../../models/User/userAddress.model';
 import createError from 'http-errors';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
@@ -29,6 +31,7 @@ export class AuthService {
             'your account has been disabled or not active yet , please contact admin'
           );
           reject(err);
+          return;
         }
         //compare password correct or not
         const isCorrect = await bcrypt.compare(password, user.password);
@@ -50,6 +53,23 @@ export class AuthService {
         if (!user) {
           const err = new createError.NotFound('user email not found');
           reject(err);
+          return;
+        }
+        result(user);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async findUserById(id: string) {
+    return new Promise(async (result, reject) => {
+      try {
+        const user = await User.findOne({ where: { id } });
+        if (!user) {
+          const err = new createError.NotFound('user not found');
+          reject(err);
+          return;
         }
         result(user);
       } catch (err) {
@@ -107,6 +127,7 @@ export class AuthService {
         if (!user) {
           const err = new createError.NotFound('invalid token or expired');
           reject(err);
+          return;
         }
 
         //save new password for user
@@ -119,6 +140,28 @@ export class AuthService {
         user.save();
 
         result(true);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async viewUserProfile(userId: string) {
+    return new Promise(async (result, reject) => {
+      try {
+        const user = await User.findOne({
+          where: { id: userId },
+          include: [UserInfo, UserAddress],
+          attributes: {
+            exclude: [
+              'password',
+              'isAdmin',
+              'passwordResetToken',
+              'passwordResetExpires',
+            ],
+          },
+        });
+        result(user);
       } catch (err) {
         reject(err);
       }

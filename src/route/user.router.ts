@@ -5,7 +5,7 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  viewUserProfile,
+  viewMyProfile,
   changeUserAvatar,
   updateUserInfo,
   updateDeliveryAddress,
@@ -20,8 +20,19 @@ import {
   updateDeliveryAddressSchema,
 } from '../utils/Validation/User/userValidate.schema';
 import { verifyEmailToken } from '../middleware/jwt.middleware';
-import { protectingRoutes } from '../middleware/auth.middleware';
+import {
+  adminProtectingRoute,
+  protectingRoutes,
+} from '../middleware/auth.middleware';
 import { uploadImage } from '../middleware/multer.middleware';
+import {
+  blockUser,
+  deleteUser,
+  unBlockUser,
+  viewAllUser,
+  viewUserDetail,
+} from '../controller/admin.controller';
+import { appendFile } from 'fs';
 
 export const router = express.Router();
 
@@ -40,14 +51,32 @@ router.patch(
 );
 router.get('/verify/:token', verifyEmailToken, verifyEmail);
 
-// PROTECTING ROUTE
-router.use(protectingRoutes);
-
-router.get('/getMe', viewUserProfile);
-router.patch('/changeAvatar', uploadImage.single('avatar'), changeUserAvatar);
-router.patch('/updateMe', JoiValidation(updateUserInfoSchema), updateUserInfo);
+// PROTECTING ROUTE user
+router.get('/getMe', protectingRoutes, viewMyProfile);
+router.patch(
+  '/changeAvatar',
+  protectingRoutes,
+  uploadImage.single('avatar'),
+  changeUserAvatar
+);
+router.patch(
+  '/updateMe',
+  protectingRoutes,
+  JoiValidation(updateUserInfoSchema),
+  updateUserInfo
+);
 router.patch(
   '/updateDeliveryAddress',
+  protectingRoutes,
   JoiValidation(updateDeliveryAddressSchema),
   updateDeliveryAddress
 );
+
+//for admin
+router.use(adminProtectingRoute);
+router.get('/', viewAllUser);
+
+router.patch('/block/:userId', blockUser);
+router.patch('/unblock/:userId', unBlockUser);
+
+router.route('/:userId').get(viewUserDetail).delete(deleteUser);
