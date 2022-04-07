@@ -6,6 +6,7 @@ import { GlobalErrorHandler } from './src/utils/ErrorHandler/globalErrHandler';
 // import './sequelize';
 import { sequelize } from './sequelize';
 import { router as userRoute } from './src/route/user.router';
+import { router as categoryRoute } from './src/route/category.router';
 import User from './src/models/User/user.model';
 //setup redis for store session
 import redis, { createClient } from 'redis';
@@ -51,6 +52,7 @@ app.use(express.static('public'));
 app.use(cookieParser());
 
 app.use('/api/user', userRoute);
+app.use('/api/category', categoryRoute);
 
 app.use(GlobalErrorHandler);
 

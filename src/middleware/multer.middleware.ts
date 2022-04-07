@@ -1,7 +1,7 @@
-import multer from 'multer';
+import multer, { memoryStorage } from 'multer';
 import createError from 'http-errors';
 
-const multerStorage = multer.diskStorage({
+const multerStorageUserAvatar = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/image/user');
   },
@@ -21,7 +21,12 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-export const uploadImage = multer({
-  storage: multerStorage,
+export const uploadUserAvatar = multer({
+  storage: multerStorageUserAvatar,
+  fileFilter: multerFilter,
+});
+
+export const uploadStream = multer({
+  storage: memoryStorage(),
   fileFilter: multerFilter,
 });

@@ -1,7 +1,6 @@
 import User from '../../models/User/user.model';
 import { AuthService } from '../UserService/auth.service';
 import createError from 'http-errors';
-import bcrypt from 'bcryptjs';
 
 export class AdminService extends AuthService {
   async getAllUser() {

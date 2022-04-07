@@ -24,7 +24,7 @@ import {
   adminProtectingRoute,
   protectingRoutes,
 } from '../middleware/auth.middleware';
-import { uploadImage } from '../middleware/multer.middleware';
+import { uploadUserAvatar } from '../middleware/multer.middleware';
 import {
   blockUser,
   deleteUser,
@@ -32,7 +32,6 @@ import {
   viewAllUser,
   viewUserDetail,
 } from '../controller/admin.controller';
-import { appendFile } from 'fs';
 
 export const router = express.Router();
 
@@ -56,7 +55,7 @@ router.get('/getMe', protectingRoutes, viewMyProfile);
 router.patch(
   '/changeAvatar',
   protectingRoutes,
-  uploadImage.single('avatar'),
+  uploadUserAvatar.single('avatar'),
   changeUserAvatar
 );
 router.patch(

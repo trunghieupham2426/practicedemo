@@ -5,6 +5,7 @@ import { generateToken } from '../utils/Jwt/jwt.util';
 import { UserDto } from '../service/UserService/dto/create-user.dto';
 import { catchAsync } from '../utils/ErrorHandler/catchAsync';
 import User from '../models/User/user.model';
+import createError from 'http-errors';
 
 const userService = new UserService();
 const mailService = new MailService();
@@ -105,6 +106,10 @@ export const viewMyProfile = catchAsync(
 export const changeUserAvatar = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id;
+    if (!req.file) {
+      //@ts-ignore
+      next(new createError(400, 'avatar is required'));
+    }
     //@ts-ignore
     const result = await userService.changeAvatar(req.file, userId);
     res.status(200).json({
