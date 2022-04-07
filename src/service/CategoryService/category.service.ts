@@ -89,12 +89,16 @@ export class CategoryService {
       try {
         const category = (await this.findCategoryById(categoryId)) as Category;
         //throw error if user try to edit categoryName already exist
-        // cho ni hoi confuse logic , hoi leader sau 👀👀👀
-        if (
-          data.categoryName &&
-          (await this.findCategoryByName(data.categoryName))
-        ) {
-          reject(new createError.NotFound('category in used'));
+        if (data.categoryName) {
+          // find category with given categoryName
+          const foundCategory = await Category.findOne({
+            where: { categoryName: data.categoryName },
+          });
+
+          if (foundCategory && foundCategory.id !== category.id) {
+            reject(new createError.NotFound('category in used'));
+            return;
+          }
         }
         //check if file is define
         if (file) {
