@@ -52,13 +52,16 @@ export const editCategory = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
     //
-    const result = await categoryService.editCategory(
+    const editedCategory = await categoryService.editCategory(
       categoryId,
       req.body,
       req.file
     );
 
-    res.send(result);
+    res.status(200).json({
+      status: true,
+      data: editedCategory,
+    });
   }
 );
 

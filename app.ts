@@ -1,5 +1,5 @@
 require('dotenv').config();
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { GlobalErrorHandler } from './src/utils/ErrorHandler/globalErrHandler';
@@ -7,10 +7,13 @@ import { GlobalErrorHandler } from './src/utils/ErrorHandler/globalErrHandler';
 import { sequelize } from './sequelize';
 import { router as userRoute } from './src/route/user.router';
 import { router as categoryRoute } from './src/route/category.router';
+import { router as productRoute } from './src/route/product.router';
+
 import User from './src/models/User/user.model';
 //setup redis for store session
 import redis, { createClient } from 'redis';
 import connectRedis from 'connect-redis';
+import Product from './src/models/ProductCateGory/product.model';
 
 declare global {
   namespace Express {
@@ -53,6 +56,7 @@ app.use(cookieParser());
 
 app.use('/api/user', userRoute);
 app.use('/api/category', categoryRoute);
+app.use('/api/product', productRoute);
 
 app.use(GlobalErrorHandler);
 

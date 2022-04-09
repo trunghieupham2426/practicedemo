@@ -26,7 +26,7 @@ class Product extends Model {
   @Column({
     type: DataType.STRING,
     defaultValue:
-      'https://res.cloudinary.com/dyw35assc/image/upload/v1644906261/DEV/default_gphmz1.png',
+      'https://res.cloudinary.com/dyw35assc/image/upload/v1649346692/PRODUCT/productdefault_dydttz.jpg',
   })
   thumpNail: string;
 

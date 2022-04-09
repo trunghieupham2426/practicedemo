@@ -2,6 +2,13 @@ import type { ErrorRequestHandler } from 'express';
 import { Request, Response } from 'express';
 import createError from 'http-errors';
 
+// ForeignKeyConstraintError
+const ForeignKeyConstraintError = (err: any) => {
+  const message = `invalid ${err.fields} id`;
+  //@ts-ignore
+  return new createError(400, message);
+};
+
 // validationError
 const validationError = (err: any) => {
   const message = err.details[0].message;
@@ -49,6 +56,9 @@ export const GlobalErrorHandler: ErrorRequestHandler = (
       break;
     case 'JsonWebTokenError':
       error = handleJWTError();
+      break;
+    case 'SequelizeForeignKeyConstraintError':
+      error = ForeignKeyConstraintError(error);
       break;
     default:
       error.message = err.message;

@@ -20,7 +20,7 @@ router
   .route('/')
   .get(getAllCategory)
   .post(
-    uploadStream.single('categoryThumNail'),
+    uploadStream.single('categoryThumpNail'),
     JoiValidation(createCategorySchema),
     createCategory
   );
