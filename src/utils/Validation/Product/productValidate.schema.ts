@@ -12,3 +12,14 @@ export const createProductSchema = Joi.object({
     .empty()
     .valid(productStatusEnum.ACTIVE, productStatusEnum.INACTIVE),
 });
+
+export const updateProductSchema = Joi.object({
+  productName: Joi.string().empty(),
+  desc: Joi.string().empty(),
+  thumpNail: Joi.string().empty(),
+  price: Joi.number().empty(),
+  unitsInStock: Joi.number().empty(),
+  productStatus: Joi.string()
+    .empty()
+    .valid(productStatusEnum.ACTIVE, productStatusEnum.INACTIVE),
+});

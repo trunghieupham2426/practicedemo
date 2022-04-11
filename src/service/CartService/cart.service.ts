@@ -5,6 +5,10 @@ import Product, {
 } from '../../models/ProductCateGory/product.model';
 import { ProductService } from '../ProductService/product.service';
 import createError from 'http-errors';
+import { Sequelize } from 'sequelize-typescript';
+import { Op, fn, col, where } from 'sequelize';
+import { sequelize } from '../../../sequelize';
+
 export class CartService {
   private productService: ProductService = new ProductService();
 
@@ -16,7 +20,7 @@ export class CartService {
           defaults: {
             userId,
           },
-          include: [CartItem],
+          include: [Product],
         });
 
         result(cart);
@@ -52,7 +56,7 @@ export class CartService {
 
         // if cart item already in cart ,then update quantity
         if (cartItem) {
-          cartItem.quantity += quantity;
+          cartItem.quantity = quantity;
           cartItem.save();
           result(cartItem);
           return;
@@ -66,6 +70,48 @@ export class CartService {
         });
 
         result(newCartItem);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async removeCartItem(cartItemId: string) {
+    return new Promise(async (result, reject) => {
+      try {
+        const cartItem = await CartItem.findByPk(cartItemId);
+
+        if (!cartItem) {
+          return reject(
+            new createError.NotFound('No cart item found with this id')
+          );
+        }
+
+        await cartItem.destroy();
+
+        result(true);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async countCartTotalPrice() {
+    return new Promise(async (result, reject) => {
+      //test test
+      try {
+        const results = await CartItem.findAll({
+          where: { cartId: 1 },
+          //@ts-ignore
+          attributes: [Sequelize.fn('sum', Sequelize.col('quantity'))],
+          include: [
+            {
+              model: Product,
+            },
+          ],
+        });
+
+        result(results);
       } catch (err) {
         reject(err);
       }

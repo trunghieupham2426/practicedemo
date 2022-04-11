@@ -5,7 +5,9 @@ import {
   DataType,
   BelongsToMany,
   HasMany,
+  BelongsTo,
 } from 'sequelize-typescript';
+import Cart from '../Cart/cart.model';
 import CartItem from '../Cart/cartitem.model';
 import Order from '../Order/order.model';
 import OrderDetail from '../Order/orderDetail.model';
@@ -63,7 +65,10 @@ class Product extends Model {
   @BelongsToMany(() => Order, () => OrderDetail)
   order: Order[];
 
+  @BelongsToMany(() => Cart, () => CartItem)
+  cart: Cart;
+
   @HasMany(() => CartItem)
-  cartItemId: CartItem;
+  cartItem: CartItem;
 }
 export default Product;

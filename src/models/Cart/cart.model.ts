@@ -5,7 +5,9 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
+import Product from '../ProductCateGory/product.model';
 import User from '../User/user.model';
 import CartItem from './cartitem.model';
 
@@ -26,6 +28,9 @@ class Cart extends Model {
   })
   cartStatus: string;
   //relation
+
+  @BelongsToMany(() => Product, () => CartItem)
+  product: Product;
 
   @HasMany(() => CartItem)
   cartItem: CartItem;

@@ -6,6 +6,7 @@ import Category from '../../models/ProductCateGory/category.model';
 import createError from 'http-errors';
 import { CloudinaryService } from '../../utils/Cloudinary/cloudinary.util';
 import ProductPhoto from '../../models/ProductCateGory/productPhoto.model';
+import { EditProductDto } from './dto/edit-product.dto';
 
 const cloudinaryService = new CloudinaryService();
 export class ProductService {
@@ -116,11 +117,41 @@ export class ProductService {
     });
   }
 
-  async updateProduct(productId: string) {
+  async updateProductInfo(
+    productId: string,
+    editProductData: Partial<EditProductDto>
+  ) {
     return new Promise(async (result, reject) => {
+      const data = { ...editProductData };
       try {
         // get the product
-        const product = await Product.findByPk(productId);
+        const product = (await Product.findByPk(productId)) as Product;
+        if (!product) {
+          reject(new createError.NotFound('No product found with this id'));
+          return;
+        }
+        // check valid photo path if user want to make photo as default thumpNail
+        if (data.thumpNail) {
+          const photo = await ProductPhoto.findOne({
+            where: {
+              productId,
+              imagePath: data.thumpNail,
+            },
+          });
+
+          if (!photo) {
+            reject(
+              new createError.BadRequest('Photo not belong to this product')
+            );
+            return;
+          }
+        }
+
+        //update product info
+        Object.assign(product, data);
+        product.save();
+
+        result(product);
       } catch (err) {
         reject(err);
       }

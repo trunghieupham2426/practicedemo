@@ -30,9 +30,20 @@ export const addItemToCart = catchAsync(
 );
 
 export const removeItemFromCart = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { cartItemId } = req.params;
+
+    await cartService.removeCartItem(cartItemId);
+
+    res.status(200).json({
+      status: true,
+    });
+  }
 );
 
 export const checkOut = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const test = await cartService.countCartTotalPrice();
+    res.send(test);
+  }
 );

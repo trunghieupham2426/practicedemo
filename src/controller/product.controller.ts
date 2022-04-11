@@ -40,16 +40,32 @@ export const getAllProduct = catchAsync(
 );
 
 export const editProduct = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
-);
+  async (req: Request, res: Response, next: NextFunction) => {
+    const productUpdateData = { ...req.body };
+    const { productId } = req.params;
 
-export const deleteProduct = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+    const updatedProduct = await productService.updateProductInfo(
+      productId,
+      productUpdateData
+    );
+
+    res.status(200).json({
+      status: true,
+      data: updatedProduct,
+    });
+  }
 );
 
 export const getProductDetail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const product = await productService.getProductDetail(req.params.productId);
-    res.send(product);
+    res.status(200).json({
+      status: true,
+      data: product,
+    });
   }
+);
+
+export const deleteProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
 );

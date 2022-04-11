@@ -24,5 +24,8 @@ class CartItem extends Model {
   @Column
   quantity: number;
   //relation
+
+  @BelongsTo(() => Product)
+  product: Product;
 }
 export default CartItem;

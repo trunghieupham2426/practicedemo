@@ -1,12 +1,16 @@
 import express from 'express';
 import {
   createProduct,
+  editProduct,
   getProductDetail,
 } from '../controller/product.controller';
 import { adminProtectingRoute } from '../middleware/auth.middleware';
 import { JoiValidation } from '../middleware/joi.middleware';
 import { uploadStream } from '../middleware/multer.middleware';
-import { createProductSchema } from '../utils/Validation/Product/productValidate.schema';
+import {
+  createProductSchema,
+  updateProductSchema,
+} from '../utils/Validation/Product/productValidate.schema';
 
 export const router = express.Router();
 
@@ -21,4 +25,7 @@ router.route('/').post(
   createProduct
 );
 
-router.route('/:productId').get(getProductDetail);
+router
+  .route('/:productId')
+  .get(getProductDetail)
+  .patch(JoiValidation(updateProductSchema), editProduct);
