@@ -8,12 +8,12 @@ import { sequelize } from './sequelize';
 import { router as userRoute } from './src/route/user.router';
 import { router as categoryRoute } from './src/route/category.router';
 import { router as productRoute } from './src/route/product.router';
+import { router as cartRoute } from './src/route/cart.router';
 
 import User from './src/models/User/user.model';
 //setup redis for store session
 import redis, { createClient } from 'redis';
 import connectRedis from 'connect-redis';
-import Product from './src/models/ProductCateGory/product.model';
 
 declare global {
   namespace Express {
@@ -57,11 +57,12 @@ app.use(cookieParser());
 app.use('/api/user', userRoute);
 app.use('/api/category', categoryRoute);
 app.use('/api/product', productRoute);
+app.use('/api/cart', cartRoute);
 
 app.use(GlobalErrorHandler);
 
 app.listen(port, async () => {
   console.log(`server running on port ${port}`);
-  //await sequelize.sync({ force: true }); // never use in production =))
+  // await sequelize.sync({ force: true }); // never use in production =))
   await sequelize.authenticate();
 });

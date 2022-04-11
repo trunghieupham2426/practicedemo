@@ -115,4 +115,15 @@ export class ProductService {
       }
     });
   }
+
+  async updateProduct(productId: string) {
+    return new Promise(async (result, reject) => {
+      try {
+        // get the product
+        const product = await Product.findByPk(productId);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }

@@ -6,11 +6,17 @@ import {
   BelongsToMany,
   HasMany,
 } from 'sequelize-typescript';
+import CartItem from '../Cart/cartitem.model';
 import Order from '../Order/order.model';
 import OrderDetail from '../Order/orderDetail.model';
 import Category from './category.model';
 import ProductCategory from './productCategory.model';
 import ProductPhoto from './productPhoto.model';
+
+export enum productStatusEnum {
+  ACTIVE = 'active',
+  INACTIVE = 'inActive',
+}
 
 @Table({
   tableName: 'Product',
@@ -41,6 +47,12 @@ class Product extends Model {
   @Column
   unitsOnOrder: number;
 
+  @Column({
+    defaultValue: productStatusEnum.ACTIVE,
+    //active or inActive
+  })
+  productStatus: string;
+
   //relation
   @BelongsToMany(() => Category, () => ProductCategory)
   category: Category[];
@@ -50,5 +62,8 @@ class Product extends Model {
 
   @BelongsToMany(() => Order, () => OrderDetail)
   order: Order[];
+
+  @HasMany(() => CartItem)
+  cartItemId: CartItem;
 }
 export default Product;

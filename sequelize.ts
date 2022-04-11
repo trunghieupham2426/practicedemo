@@ -17,4 +17,3 @@ export const sequelize = new Sequelize(
       member.toLowerCase(),
   }
 );
-console.log('Database Connected!');

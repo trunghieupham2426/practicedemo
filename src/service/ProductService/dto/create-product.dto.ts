@@ -5,4 +5,5 @@ export interface ProductDto {
   price: number;
   unitsInStock: number;
   categoryId: string[];
+  productStatus: string;
 }

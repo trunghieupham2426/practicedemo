@@ -9,6 +9,8 @@ import {
 } from 'sequelize-typescript';
 import PaymentType from '../Payment/paymentType.model';
 import Product from '../ProductCateGory/product.model';
+import User from '../User/user.model';
+import UserAddress from '../User/userAddress.model';
 import OrderDetail from './orderDetail.model';
 import OrderStatus from './orderStatus.model';
 
@@ -38,6 +40,14 @@ class Order extends Model {
   @ForeignKey(() => OrderStatus)
   @Column
   orderStatusId: number;
+
+  @ForeignKey(() => UserAddress)
+  @Column
+  userDeliveryId: number;
+
+  @ForeignKey(() => User)
+  @Column
+  userId: number;
 
   //relation
   @BelongsToMany(() => Product, () => OrderDetail)
