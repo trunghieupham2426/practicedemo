@@ -58,7 +58,9 @@ export class CategoryService {
   async findCategoryById(id: string) {
     return new Promise(async (resolve, reject) => {
       try {
-        const category = await Category.findByPk(id);
+        const category = await Category.findByPk(id, {
+          include: [Product],
+        });
         if (!category) {
           reject(new createError.NotFound('category not found'));
           return;
@@ -73,7 +75,9 @@ export class CategoryService {
   async getAllCategory() {
     return new Promise(async (resolve, reject) => {
       try {
-        const listCategory = await Category.findAndCountAll();
+        const listCategory = await Category.findAndCountAll({
+          include: [Product],
+        });
         resolve(listCategory);
       } catch (err) {
         reject(err);

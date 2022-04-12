@@ -13,6 +13,12 @@ import Cart from './cart.model';
   timestamps: false,
 })
 class CartItem extends Model {
+  @Column({
+    primaryKey: true,
+    autoIncrement: true,
+  })
+  id: number;
+
   @ForeignKey(() => Cart)
   @Column
   cartId: number;

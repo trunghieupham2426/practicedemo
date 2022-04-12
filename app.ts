@@ -63,6 +63,6 @@ app.use(GlobalErrorHandler);
 
 app.listen(port, async () => {
   console.log(`server running on port ${port}`);
-  //await sequelize.sync({ force: true }); // never use in production =))
+  // await sequelize.sync({ force: true }); // never use in production =))
   await sequelize.authenticate();
 });

@@ -78,10 +78,22 @@ export class ProductService {
     });
   }
 
-  async getAllProduct() {
+  async getAllProduct(sort?: string) {
+    // http://localhost:5000/api/product?sort=name:asc,price:desc
     return new Promise(async (resolve, reject) => {
       try {
-        const allProduct = await Product.findAndCountAll();
+        let sortArr: any[] = [];
+        if (sort) {
+          sortArr = sort.split(',');
+          sortArr = sortArr.reduce((acc, cur) => {
+            acc.push(cur.split(':'));
+            return acc;
+          }, []);
+        }
+
+        const allProduct = await Product.findAndCountAll({
+          order: sortArr,
+        });
         resolve(allProduct);
       } catch (err) {
         reject(err);

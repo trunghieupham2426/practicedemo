@@ -30,7 +30,9 @@ export const createProduct = catchAsync(
 
 export const getAllProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const allProduct = await productService.getAllProduct();
+    const { sort } = req.query;
+    //@ts-ignore
+    const allProduct = await productService.getAllProduct(sort);
 
     res.status(200).json({
       status: true,
