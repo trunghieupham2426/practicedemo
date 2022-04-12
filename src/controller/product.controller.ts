@@ -67,5 +67,32 @@ export const getProductDetail = catchAsync(
 );
 
 export const deleteProduct = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+    await productService.deleteProduct(productId);
+
+    res.status(200).json({
+      status: true,
+    });
+  }
+);
+
+export const editProductPhoto = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+    const { deletePhotoIds } = req.body;
+
+    //@ts-ignore
+    const productPhoto = req.files && req.files?.productPhoto;
+
+    await productService.editProductPhoto(
+      productId,
+      productPhoto,
+      deletePhotoIds
+    );
+
+    res.status(200).json({
+      status: true,
+    });
+  }
 );

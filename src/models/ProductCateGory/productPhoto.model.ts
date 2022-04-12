@@ -17,6 +17,9 @@ class ProductPhoto extends Model {
   @Column
   imagePath: string;
 
+  @Column
+  imgPublicId: string;
+
   @ForeignKey(() => Product)
   @Column
   productId: number;

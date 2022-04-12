@@ -4,10 +4,10 @@ import createError from 'http-errors';
 
 export class AdminService extends AuthService {
   async getAllUser() {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const users = await User.findAndCountAll();
-        result(users);
+        resolve(users);
       } catch (err) {
         reject(err);
       }
@@ -15,12 +15,12 @@ export class AdminService extends AuthService {
   }
 
   async deleteUser(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = (await this.findUserById(userId)) as User;
         if (!user.isActive) {
           await user.destroy();
-          result(true);
+          resolve(true);
         }
         const err = new createError.BadRequest(
           'user is active , can not delete'
@@ -33,7 +33,7 @@ export class AdminService extends AuthService {
   }
 
   async blockUser(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = (await this.findUserById(userId)) as User;
         if (!user.isActive) {
@@ -44,7 +44,7 @@ export class AdminService extends AuthService {
         user.isActive = false;
         user.save();
 
-        result(true);
+        resolve(true);
       } catch (err) {
         reject(err);
       }
@@ -52,7 +52,7 @@ export class AdminService extends AuthService {
   }
 
   async unblockUser(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = (await this.findUserById(userId)) as User;
 
@@ -64,7 +64,7 @@ export class AdminService extends AuthService {
         user.isActive = true;
         user.save();
 
-        result(true);
+        resolve(true);
       } catch (err) {
         reject(err);
       }

@@ -65,4 +65,15 @@ export class CloudinaryService {
       toStream(file.buffer).pipe(upload);
     });
   }
+
+  async deleteProductPhoto(public_ids: string[]) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await v2.api.delete_resources(public_ids);
+        resolve(res);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }

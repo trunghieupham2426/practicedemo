@@ -1,7 +1,6 @@
 import express from 'express';
 import {
   addItemToCart,
-  checkOut,
   getUserCart,
   removeItemFromCart,
 } from '../controller/cart.controller';
@@ -13,5 +12,3 @@ router.use(protectingRoutes);
 router.route('/').get(getUserCart).post(addItemToCart);
 
 router.route('/:cartItemId').delete(removeItemFromCart);
-
-router.get('/test', checkOut);

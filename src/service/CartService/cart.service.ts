@@ -5,15 +5,13 @@ import Product, {
 } from '../../models/ProductCateGory/product.model';
 import { ProductService } from '../ProductService/product.service';
 import createError from 'http-errors';
-import { Sequelize } from 'sequelize-typescript';
-import { Op, fn, col, where } from 'sequelize';
 import { sequelize } from '../../../sequelize';
 
 export class CartService {
   private productService: ProductService = new ProductService();
 
   async getUserCart(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const [cart, created] = await Cart.findOrCreate({
           where: { userId },
@@ -23,7 +21,7 @@ export class CartService {
           include: [Product],
         });
 
-        result(cart);
+        resolve(cart);
       } catch (err) {
         reject(err);
       }
@@ -31,19 +29,32 @@ export class CartService {
   }
 
   async addToCart(userId: string, productId: string, quantity: number) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         // get user cart
         const cart = (await this.getUserCart(userId)) as Cart;
 
         // check status of product
-        const product = (await this.productService.getProductDetail(
-          productId
-        )) as Product;
+        const product = (await Product.findByPk(productId)) as Product;
+
+        if (!product) {
+          throw new createError.NotFound('No product found with this id');
+        }
 
         if (product.productStatus === productStatusEnum.INACTIVE) {
-          reject(new createError.BadRequest('This product not active'));
-          return;
+          throw new createError.BadRequest('This product not active');
+        }
+
+        //check invalid quantity
+        if (quantity <= 0) {
+          throw new createError.BadRequest('Quantity must be greater than 0');
+        }
+
+        //check if remain stock is enough
+        if (product.unitsInStock - product.unitsOnOrder < quantity) {
+          throw new createError.BadRequest(
+            'Not enough stock, please reduce quantity'
+          );
         }
 
         // find cart item
@@ -58,7 +69,8 @@ export class CartService {
         if (cartItem) {
           cartItem.quantity = quantity;
           cartItem.save();
-          result(cartItem);
+
+          resolve(cartItem);
           return;
         }
 
@@ -66,10 +78,10 @@ export class CartService {
         const newCartItem = await CartItem.create({
           cartId: cart.id,
           productId: productId,
-          quantity: 1,
+          quantity: quantity,
         });
 
-        result(newCartItem);
+        resolve(newCartItem);
       } catch (err) {
         reject(err);
       }
@@ -77,41 +89,40 @@ export class CartService {
   }
 
   async removeCartItem(cartItemId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const cartItem = await CartItem.findByPk(cartItemId);
 
         if (!cartItem) {
-          return reject(
-            new createError.NotFound('No cart item found with this id')
-          );
+          throw new createError.NotFound('No cart item found with this id');
         }
 
         await cartItem.destroy();
 
-        result(true);
+        resolve(true);
       } catch (err) {
         reject(err);
       }
     });
   }
 
-  async countCartTotalPrice() {
-    return new Promise(async (result, reject) => {
+  async countCartTotalPrice(cartId: string) {
+    return new Promise(async (resolve, reject) => {
       //test test
       try {
-        const results = await CartItem.findAll({
-          where: { cartId: 1 },
-          //@ts-ignore
-          attributes: [Sequelize.fn('sum', Sequelize.col('quantity'))],
-          include: [
-            {
-              model: Product,
-            },
-          ],
-        });
+        const totalPrice = await sequelize.query(
+          `SELECT SUM( ci.quantity * pr.price) as totalPrice FROM cartitem ci
+        JOIN product pr
+        ON ci.productId = pr.id
+        WHERE ci.cartId = ? ;`,
+          {
+            replacements: [cartId],
+            //@ts-ignore
+            type: sequelize.QueryTypes.SELECT,
+          }
+        );
 
-        result(results);
+        resolve(totalPrice);
       } catch (err) {
         reject(err);
       }

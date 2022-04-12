@@ -46,7 +46,9 @@ class Product extends Model {
   @Column
   unitsInStock: number;
 
-  @Column
+  @Column({
+    defaultValue: 0,
+  })
   unitsOnOrder: number;
 
   @Column({

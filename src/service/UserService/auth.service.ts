@@ -8,12 +8,12 @@ import { Op } from 'sequelize';
 
 export class AuthService {
   async verifyUserEmail(email: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = (await this.findUserByEmail(email)) as User;
         user.isActive = true;
         user.save();
-        result(user);
+        resolve(user);
       } catch (err) {
         reject(err);
       }
@@ -21,7 +21,7 @@ export class AuthService {
   }
 
   async loginUser(email: string, password: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       let err;
       try {
         const user = (await this.findUserByEmail(email)) as User;
@@ -39,7 +39,7 @@ export class AuthService {
           err = new createError.BadRequest('password not correct');
           reject(err);
         }
-        result(user);
+        resolve(user);
       } catch (err) {
         reject(err);
       }
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   async findUserByEmail(email: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = await User.findOne({ where: { email } });
         if (!user) {
@@ -55,7 +55,7 @@ export class AuthService {
           reject(err);
           return;
         }
-        result(user);
+        resolve(user);
       } catch (err) {
         reject(err);
       }
@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   async findUserById(id: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = await User.findOne({ where: { id } });
         if (!user) {
@@ -71,7 +71,7 @@ export class AuthService {
           reject(err);
           return;
         }
-        result(user);
+        resolve(user);
       } catch (err) {
         reject(err);
       }
@@ -79,7 +79,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         //find user
         const user = (await this.findUserByEmail(email)) as User;
@@ -97,7 +97,7 @@ export class AuthService {
         user.passwordResetExpires = passwordResetExpires;
         user.save();
         //send randomToken to user
-        result(randomToken);
+        resolve(randomToken);
       } catch (err) {
         reject(err);
       }
@@ -105,7 +105,7 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         // hash the token received from user
         const hashToken = crypto
@@ -139,7 +139,7 @@ export class AuthService {
         user.passwordResetToken = null;
         user.save();
 
-        result(true);
+        resolve(true);
       } catch (err) {
         reject(err);
       }
@@ -147,7 +147,7 @@ export class AuthService {
   }
 
   async viewUserProfile(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const user = await User.findOne({
           where: { id: userId },
@@ -161,7 +161,7 @@ export class AuthService {
             ],
           },
         });
-        result(user);
+        resolve(user);
       } catch (err) {
         reject(err);
       }

@@ -3,6 +3,7 @@ import Category from '../../models/ProductCateGory/category.model';
 import { CategoryDto } from './dto/create-category.dto';
 import { CloudinaryService } from '../../utils/Cloudinary/cloudinary.util';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import Product from '../../models/ProductCateGory/product.model';
 
 const cloudinaryService = new CloudinaryService();
 
@@ -11,7 +12,7 @@ export class CategoryService {
     categoryDto: Partial<CategoryDto>,
     file: Express.Multer.File
   ) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       const data = { ...categoryDto };
       try {
         const category = await Category.findOne({
@@ -26,9 +27,10 @@ export class CategoryService {
         //upload category thumpNail
         const res = await cloudinaryService.uploadCategoryThumpNail(file);
         data.thumpNail = res.url;
+        data.imgPublicId = res.public_id;
         //create new category
         const newCategory = await Category.create(data);
-        result(newCategory);
+        resolve(newCategory);
       } catch (err) {
         reject(err);
       }
@@ -36,7 +38,7 @@ export class CategoryService {
   }
 
   async findCategoryByName(name: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const category = await Category.findOne({
           where: { categoryName: name },
@@ -46,7 +48,7 @@ export class CategoryService {
           reject(err);
           return;
         }
-        result(category);
+        resolve(category);
       } catch (err) {
         reject(err);
       }
@@ -54,14 +56,14 @@ export class CategoryService {
   }
 
   async findCategoryById(id: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const category = await Category.findByPk(id);
         if (!category) {
           reject(new createError.NotFound('category not found'));
           return;
         }
-        result(category);
+        resolve(category);
       } catch (err) {
         reject(err);
       }
@@ -69,10 +71,10 @@ export class CategoryService {
   }
 
   async getAllCategory() {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const listCategory = await Category.findAndCountAll();
-        result(listCategory);
+        resolve(listCategory);
       } catch (err) {
         reject(err);
       }
@@ -84,7 +86,7 @@ export class CategoryService {
     updateData: Partial<UpdateCategoryDto>,
     file?: Express.Multer.File
   ) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       const data = { ...updateData };
       try {
         const category = (await this.findCategoryById(categoryId)) as Category;
@@ -106,6 +108,7 @@ export class CategoryService {
           file.filename = `category-${category.categoryName}-${category.id}`;
           const res = await cloudinaryService.uploadCategoryThumpNail(file);
           data.thumpNail = res.url;
+          data.imgPublicId = res.public_id;
         }
 
         //update data
@@ -113,7 +116,37 @@ export class CategoryService {
         category.save();
 
         //return category
-        result(category);
+        resolve(category);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async deleteCategory(categoryId: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const category = (await Category.findOne({
+          where: { id: categoryId },
+          include: [Product],
+        })) as Category;
+
+        if (!category) {
+          reject(new createError.NotFound('category not found'));
+          return;
+        }
+
+        // check there is product in category
+        if (category.product.length > 0) {
+          reject(
+            new createError.BadRequest('product in category, can not delete')
+          );
+          return;
+        }
+
+        category.destroy();
+
+        resolve(true);
       } catch (err) {
         reject(err);
       }

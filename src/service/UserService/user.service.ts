@@ -12,7 +12,7 @@ const cloudinaryService = new CloudinaryService();
 
 export class UserService extends AuthService {
   async createUser(userDto: UserDto) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       const data = { ...userDto };
       try {
         const user = await User.findOne({ where: { email: data.email } });
@@ -28,7 +28,7 @@ export class UserService extends AuthService {
         await UserInfo.create({ userId: newUser.id });
         //add userAddress
         await UserAddress.create({ userId: newUser.id });
-        result(newUser);
+        resolve(newUser);
       } catch (err) {
         reject(err);
       }
@@ -36,7 +36,7 @@ export class UserService extends AuthService {
   }
 
   async changeAvatar(file: Express.Multer.File, userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         //get user info
         const userInfo = (await this.findUserProfileById(userId)) as UserInfo;
@@ -46,7 +46,7 @@ export class UserService extends AuthService {
         userInfo.avatarPath = res.url;
         userInfo.save();
         //
-        result(userInfo);
+        resolve(userInfo);
       } catch (err) {
         reject(err);
       }
@@ -57,7 +57,7 @@ export class UserService extends AuthService {
     userUpdateDto: Partial<UserUpdateProfileDto>,
     userId: string
   ) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       const updateData = { ...userUpdateDto };
       try {
         //get User info
@@ -66,7 +66,7 @@ export class UserService extends AuthService {
         Object.assign(userInfo, updateData);
         userInfo.save();
 
-        result(userInfo);
+        resolve(userInfo);
       } catch (err) {
         reject(err);
       }
@@ -77,7 +77,7 @@ export class UserService extends AuthService {
     userDeliveryAddress: Partial<UserDeliveryAddressDto>,
     userId: string
   ) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       const updateAddressData = { ...userDeliveryAddress };
       try {
         //get User address
@@ -97,7 +97,7 @@ export class UserService extends AuthService {
         Object.assign(userAddress, updateAddressData);
         userAddress.save();
 
-        result(userAddress);
+        resolve(userAddress);
       } catch (err) {
         reject(err);
       }
@@ -105,7 +105,7 @@ export class UserService extends AuthService {
   }
 
   async findUserProfileById(userId: string) {
-    return new Promise(async (result, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         const userInfo = (await UserInfo.findOne({
           where: { userId },
@@ -117,7 +117,7 @@ export class UserService extends AuthService {
           return;
         }
 
-        result(userInfo);
+        resolve(userInfo);
       } catch (err) {
         reject(err);
       }

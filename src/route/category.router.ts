@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createCategory,
+  deleteCategory,
   editCategory,
   getAllCategory,
   viewCategoryDetail,
@@ -32,4 +33,5 @@ router
     uploadStream.single('categoryThumNail'),
     JoiValidation(updateCategorySchema),
     editCategory
-  );
+  )
+  .delete(deleteCategory);

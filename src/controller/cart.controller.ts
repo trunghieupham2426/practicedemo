@@ -40,10 +40,3 @@ export const removeItemFromCart = catchAsync(
     });
   }
 );
-
-export const checkOut = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const test = await cartService.countCartTotalPrice();
-    res.send(test);
-  }
-);

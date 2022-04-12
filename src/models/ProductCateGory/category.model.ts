@@ -26,6 +26,9 @@ class Category extends Model {
   })
   thumpNail: string;
 
+  @Column
+  imgPublicId: string;
+
   //relation
   @BelongsToMany(() => Product, () => ProductCategory)
   product: Product[];
