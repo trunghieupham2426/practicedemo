@@ -18,7 +18,12 @@ export class CartService {
           defaults: {
             userId,
           },
-          include: [Product],
+          include: {
+            model: Product,
+            through: {
+              attributes: ['quantity'],
+            },
+          },
         });
 
         resolve(cart);
@@ -61,7 +66,7 @@ export class CartService {
         const cartItem = await CartItem.findOne({
           where: {
             productId: productId,
-            cartId: cart.id,
+            userId: cart.userId,
           },
         });
 
@@ -76,7 +81,7 @@ export class CartService {
 
         // if no cart item then create cart Item;
         const newCartItem = await CartItem.create({
-          cartId: cart.id,
+          userId: cart.userId,
           productId: productId,
           quantity: quantity,
         });
@@ -106,7 +111,7 @@ export class CartService {
     });
   }
 
-  async countCartTotalPrice(cartId: string) {
+  async countCartTotalPrice(cartId: string[]) {
     return new Promise(async (resolve, reject) => {
       //test test
       try {
@@ -114,15 +119,15 @@ export class CartService {
           `SELECT SUM( ci.quantity * pr.price) as totalPrice FROM cartitem ci
         JOIN product pr
         ON ci.productId = pr.id
-        WHERE ci.cartId = ? ;`,
+        WHERE ci.id in (?) ;`,
           {
             replacements: [cartId],
             //@ts-ignore
             type: sequelize.QueryTypes.SELECT,
           }
         );
-
-        resolve(totalPrice);
+        //@ts-ignore
+        resolve(totalPrice[0].totalPrice);
       } catch (err) {
         reject(err);
       }

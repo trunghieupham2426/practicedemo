@@ -9,6 +9,7 @@ import { router as userRoute } from './src/route/user.router';
 import { router as categoryRoute } from './src/route/category.router';
 import { router as productRoute } from './src/route/product.router';
 import { router as cartRoute } from './src/route/cart.router';
+import { router as orderRoute } from './src/route/order.router';
 
 import User from './src/models/User/user.model';
 //setup redis for store session
@@ -58,6 +59,7 @@ app.use('/api/user', userRoute);
 app.use('/api/category', categoryRoute);
 app.use('/api/product', productRoute);
 app.use('/api/cart', cartRoute);
+app.use('/api/order', orderRoute);
 
 app.use(GlobalErrorHandler);
 

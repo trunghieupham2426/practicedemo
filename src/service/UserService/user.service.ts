@@ -123,4 +123,24 @@ export class UserService extends AuthService {
       }
     });
   }
+
+  async getUserAddress(userId: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const userAddress = (await UserAddress.findOne({
+          where: { userId },
+        })) as UserAddress;
+
+        if (!userAddress) {
+          const err = new createError.NotFound('address not found');
+          reject(err);
+          return;
+        }
+
+        resolve(userAddress);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }

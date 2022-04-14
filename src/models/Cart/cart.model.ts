@@ -17,7 +17,9 @@ import CartItem from './cartitem.model';
 })
 class Cart extends Model {
   @ForeignKey(() => User)
-  @Column
+  @Column({
+    primaryKey: true,
+  })
   userId: number;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })

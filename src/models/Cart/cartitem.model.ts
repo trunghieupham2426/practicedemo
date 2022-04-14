@@ -21,7 +21,7 @@ class CartItem extends Model {
 
   @ForeignKey(() => Cart)
   @Column
-  cartId: number;
+  userId: number;
 
   @ForeignKey(() => Product)
   @Column
